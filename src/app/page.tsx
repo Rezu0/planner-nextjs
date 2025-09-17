@@ -70,6 +70,9 @@ export default function Home() {
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Planner
           </Button>
+          <Button className="bg-gray-800 hover:bg-gray-700">
+            Logout
+          </Button>
         </header>
 
         <PlannerCalendar />

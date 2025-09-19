@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -11,18 +11,37 @@ import { Button } from "@/components/ui/button";
 import { Label} from "@/components/ui/label"
 import RichTextEditor from "./RichTextEditorComponent";
 import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/AuthProvider";
+import { toast } from "sonner";
 
-export default function PlannerCalendar() {
+interface FullCalendarProps {
+  isPlanners?: any[];
+  setPlanners?: (planners: any[]) => void;
+}
+
+export default function PlannerCalendar({ isPlanners, setPlanners }: FullCalendarProps) {
   const [events, setEvents] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedInfo, setSelectedInfo] = useState<any>(null);
-  const [title, setTitle] = useState("");
   const [editEvent, setEditEvent] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+  });
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    setEvents(isPlanners || []);
+  }, [isPlanners]);
 
   // saat pilih tanggal
   const handleSelect = (info: any) => {
     setSelectedInfo(info);
-    setTitle("");
+    setFormData((prev) => ({
+      ...prev,
+      title: '',
+      description: '',
+    }));
     setEditEvent(null);
     setOpen(true);
   };
@@ -30,23 +49,64 @@ export default function PlannerCalendar() {
   // saat klik event
   const handleEventClick = (clickInfo: any) => {
     setEditEvent(clickInfo.event);
-    setTitle(clickInfo.event.title);
+    setFormData((prev) => ({
+      ...prev,
+      title: clickInfo.event.title,
+      description: clickInfo.event.extendedProps.description || '',
+    }));
     setOpen(true);
   };
 
   // simpan event baru / update event
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editEvent) {
       // update event
-      editEvent.setProp("title", title);
+      editEvent.setProp("title", formData.title);
+      editEvent.setExtendedProp("description", formData.description);
     } else {
       // tambah event baru
+      const res = await fetch("/api/planner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          start: selectedInfo.startStr,
+          end: selectedInfo.endStr,
+          allDay: selectedInfo.allDay,
+          idUser: user?.idUser,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "failed to create event");
+        return;
+      }
+
+      toast.success(data.message || "Event created successfully 🎉");
+
+      setPlanners?.([
+        ...(isPlanners || []),
+        {
+          _id: data.data?._id, // fallback id sementara
+          title: formData.title,
+          start: selectedInfo.startStr,
+          end: selectedInfo.endStr,
+          description: formData.description,
+          allDay: selectedInfo.allDay,
+        }
+      ]);
+
       setEvents([
         ...events,
         {
-          title,
+          _id: data.data?._id,
+          title: formData.title,
           start: selectedInfo.startStr,
           end: selectedInfo.endStr,
+          description: formData.description,
           allDay: selectedInfo.allDay,
         },
       ]);
@@ -62,14 +122,21 @@ export default function PlannerCalendar() {
     }
   };
 
+  const handlerChange = (key: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
   return (
     <div className="p-6 bg-white rounded-xl shadow">
       <h2 className="text-lg font-semibold mb-4">Planner Calendar</h2>
       
-      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-hidden">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="timeGridDay"
+          initialView="dayGridMonth"
           slotMinTime="00:00:00"
           slotMaxTime="24:00:00"
           slotDuration="00:30:00"
@@ -80,21 +147,28 @@ export default function PlannerCalendar() {
           eventTimeFormat={{
             hour: "2-digit",
             minute: "2-digit",
-            hour12: true, // true kalau mau pakai AM/PM
+            hour12: true,
           }}
           eventContent={(arg) => {
             const start = arg.event.start
-              ? new Date(arg.event.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+              ? new Date(arg.event.start).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
               : "";
             const end = arg.event.end
-              ? new Date(arg.event.end).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+              ? new Date(arg.event.end).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
               : "";
 
             return {
               html: `
                 <div class="px-1 text-xs bg-blue-500 text-white rounded">
-                  <div class="font-semibold">${(arg.event.allDay) ? "All day" : `${start} - ${end}` }</div>
-                  
+                  <div class="font-semibold">${
+                    arg.event.allDay ? "All day" : `${start} - ${end}`
+                  }</div>
                   <div>${arg.event.title}</div>
                 </div>
               `,
@@ -102,11 +176,13 @@ export default function PlannerCalendar() {
           }}
           longPressDelay={1}
           eventClick={handleEventClick}
-          height="auto"
+          height="100%"   // <--- penting biar ikut container
+          contentHeight="auto"
+          expandRows={true}
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay", 
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
           buttonText={{
             today: "Hari ini",
@@ -115,7 +191,6 @@ export default function PlannerCalendar() {
             day: "Hari",
           }}
         />
-
       </div>
 
 
@@ -136,8 +211,8 @@ export default function PlannerCalendar() {
               <Label htmlFor="title" className="text-sm font-medium">Title Event</Label>
               <Input 
                 placeholder="Type title here..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                value={formData.title}
+                onChange={(e) => handlerChange("title", e.target.value)}
                 className="w-full rounded-md border border-gray-300 p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
@@ -147,7 +222,10 @@ export default function PlannerCalendar() {
                 Description
               </Label>
               {/* Rich Editor */}
-              <RichTextEditor />
+              <RichTextEditor
+                value={formData.description}
+                onChange={(val) => handlerChange('description', val)}
+              />
             </div>
           </div>
 
@@ -161,8 +239,6 @@ export default function PlannerCalendar() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-
     </div>
   );
 }

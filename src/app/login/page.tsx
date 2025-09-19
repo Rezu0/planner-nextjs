@@ -11,6 +11,7 @@ import { useLoading } from "@/components/loading/LoadingContext";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuthStore } from "@/AuthProvider";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -44,6 +45,12 @@ function LoginIndexComponent() {
       setUsername("");
       setPassword("");
 
+      useAuthStore.getState().setUser({
+        username: data.data.username,
+        fullname: data.data.fullname,
+        idUser: data.data.id
+      })
+    
       showLoading();
       await delay(2000);
       hideLoading();

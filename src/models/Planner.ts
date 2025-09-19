@@ -12,7 +12,7 @@ export interface IPlanner extends Document {
 const PlannerSchema: Schema<IPlanner> = new Schema(
   {
     title: { type: String, required: true },
-    description: { type: String},
+    description: { type: String, required: false },
     start: { type: Date, required: true },
     end: { type: Date, required: true },
     allDay: { type: Boolean, default: true },

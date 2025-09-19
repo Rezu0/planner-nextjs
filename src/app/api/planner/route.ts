@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       )
     }
 
-    await Planner.create({
+    const newPlanner = await Planner.create({
       uuid: crypto.randomUUID(),
       title,
       description,
@@ -26,8 +26,39 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { message: "Event created successfully", status: true },
+      { 
+        message: "Event created successfully", 
+        status: true,
+        data: newPlanner
+      },
       { status: 201 },
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      { status: false, message: "Terjadi kesalahan", error: error.message },
+      { status: 500 },
+    )
+  }
+}
+
+export async function GET(req: Request) {
+  try {
+    await dbConnect();
+    const { searchParams } = new URL(req.url);
+    const idUser = searchParams.get("user");
+
+    if (!idUser) {
+      return NextResponse.json(
+        { status: false, message: "User ID is required" },
+        { status: 400 },
+      );
+    }
+
+    const planners = await Planner.find({ idUser }).sort({ start: 1 });
+
+    return NextResponse.json(
+      { status: true, data: planners, message: "Planners fetched successfully" },
+      { status: 200 },
     );
   } catch (error: any) {
     return NextResponse.json(

@@ -121,17 +121,18 @@
   }
 }
 
-/* Full width */
+/* Full width & height */
 .fc {
   width: 100% !important;
-  font-size: 0.85rem; /* kecilkan font biar muat di layar kecil */
+  height: 100% !important;
+  font-size: 0.85rem; /* biar muat di layar kecil */
 }
 
 /* Toolbar wrap biar nggak overflow */
 .fc .fc-toolbar.fc-header-toolbar {
   flex-wrap: wrap;
   gap: 0.5rem;
-  justify-content: center; /* biar rata tengah pas wrap */
+  justify-content: center;
 }
 
 /* Judul toolbar */
@@ -139,7 +140,7 @@
   @apply text-base sm:text-lg font-semibold text-gray-800;
 }
 
-/* Tanggal hari ini */
+/* Hari ini highlight */
 .fc .fc-day-today {
   @apply bg-blue-50 border border-blue-400;
 }
@@ -149,18 +150,36 @@
   @apply text-gray-700 font-medium;
 }
 
+/* Hilangin space ekstra kanan */
+.fc .fc-scrollgrid {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+/* Biar grid rata & ga ada celah */
+.fc .fc-daygrid-day-frame {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
 /* Table grid biar shrink */
 .fc-daygrid-body,
 .fc-scroller {
   width: 100% !important;
   overflow: hidden !important;
+  table-layout: fixed !important;
 }
 
 /* Responsive tweaks khusus mobile */
 @media (max-width: 640px) {
+  .fc {
+    font-size: 0.75rem; /* lebih kecil */
+  }
+
   /* Cell kalender lebih pendek */
   .fc .fc-daygrid-day {
-    min-height: 60px;
+    min-height: 50px;
   }
 
   /* Tombol lebih kecil */
@@ -170,17 +189,16 @@
 
   /* Judul lebih kecil */
   .fc .fc-toolbar-title {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
-}
 
-@media (max-width: 640px) {
   .fc-toolbar-chunk {
     width: 100%;
     justify-content: center;
     margin-bottom: 0.5rem;
   }
 }
+
 
 .ProseMirror {
   outline: none !important;

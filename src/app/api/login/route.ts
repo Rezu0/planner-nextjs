@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     // generate token JWT baru
     const fullnameFromDB = user.fullname;
     const token = jwt.sign(
-      { username, fullname: fullnameFromDB },
+      { username, fullname: fullnameFromDB, id: user._id },
       process.env.JWT_SECRET || "secret",
       { expiresIn: "30d", algorithm: 'HS256' }
     );

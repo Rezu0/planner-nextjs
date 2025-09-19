@@ -6,8 +6,14 @@ import { Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Strikethro
 import { Button } from "@/components/ui/button"
 import Underline from "@tiptap/extension-underline"
 import Heading from "@tiptap/extension-heading"
+import { useEffect } from "react"
 
-export default function RichTextEditor() {
+interface RichTextEditorProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export default function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -18,9 +24,18 @@ export default function RichTextEditor() {
       }),
       Underline
     ],
-    content: "<p>Type your description or something else here...</p>",
+    content: value || "<p className='opacity-50'>Type your description or something else here...</p>",
     immediatelyRender: false,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML())
+    },
   })
+
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value || "<p className='opacity-50'>Type your description or something else here...</p>");
+    }
+  }, [value, editor]);
 
   if (!editor) return null
 

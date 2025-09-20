@@ -95,22 +95,24 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
       </div>
 
       {/* Editor Content */}
-      <div className="border rounded-lg bg-white p-4 shadow-sm min-h-[150px] hover:cursor-text">
-        <EditorContent 
-          editor={editor} 
-          className="prose max-w-none 
-               [&_ul]:list-disc 
-               [&_ol]:list-decimal 
-               [&_li]:ml-4 
-               outline-none 
-               border-none 
-               focus:outline-none 
-               focus:ring-0 
-               focus:border-none 
-               [&.ProseMirror-focused]:outline-none 
-               [&.ProseMirror-focused]:ring-0 
-               [&.ProseMirror-focused]:border-none"
-        />
+      <div className="border rounded-lg bg-white px-3 shadow-sm hover:cursor-text w-full">
+        <div className="w-full h-[250px] overflow-y-auto">
+          <EditorContent 
+            editor={editor} 
+            className="prose max-w-none
+                [&_ul]:list-disc 
+                [&_ol]:list-decimal 
+                [&_li]:ml-4 
+                outline-none 
+                border-none 
+                focus:outline-none 
+                focus:ring-0 
+                focus:border-none 
+                [&.ProseMirror-focused]:outline-none 
+                [&.ProseMirror-focused]:ring-0 
+                [&.ProseMirror-focused]:border-none"
+          />
+        </div>
       </div>
     </div>
   )

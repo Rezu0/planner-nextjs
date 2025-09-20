@@ -36,6 +36,8 @@ export default function PlannerCalendar({ isPlanners, setPlanners }: FullCalenda
 
   // saat pilih tanggal
   const handleSelect = (info: any) => {
+    console.log(info);
+    
     setSelectedInfo(info);
     setFormData((prev) => ({
       ...prev,

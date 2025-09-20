@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin '@tailwindcss/typography';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -202,17 +203,30 @@
 
 .ProseMirror {
   outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  
+  /* Text wrapping and overflow handling */
+  word-wrap: break-word !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  white-space: pre-wrap !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  
+  /* Basic styling */
+  padding: 12px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #374151;
+  
+  /* Ensure proper height */
+  min-height: 100px;
 }
-
-.prose h1 {
-  font-size: 1.5rem; /* atau sesuai selera */
-  font-weight: bold;
-}
-
 
 .ProseMirror-focused {
   outline: none !important;
   border: none !important;
   box-shadow: none !important;
+  ring: none !important;
 }
-

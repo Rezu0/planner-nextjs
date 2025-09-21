@@ -137,7 +137,10 @@ export default function Home() {
         </header>
 
         <div className="grid grid-cols-1 gap-3">
-          <PlannerListComponent planners={isPlanners}/>
+          <PlannerListComponent 
+            planners={isPlanners}
+            setPlanners={setPlanners}
+          />
           <PlannerCalendar 
             isPlanners={isPlanners}
             setPlanners={setPlanners}

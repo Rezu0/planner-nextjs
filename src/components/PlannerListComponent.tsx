@@ -19,9 +19,10 @@ export type Planner = {
 
 interface PlannerListProps {
   planners: Planner[];
+  setPlanners?: React.Dispatch<React.SetStateAction<Planner[]>>;
 }
 
-export function PlannerListComponent({ planners }: PlannerListProps) {
+export function PlannerListComponent({ planners, setPlanners }: PlannerListProps) {
   const [isOpenDialog, setOpenDialog] = useState(false);
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [selectedPlanner, setSelectedPlanner] = useState<Planner | null>(null);
@@ -161,6 +162,7 @@ export function PlannerListComponent({ planners }: PlannerListProps) {
         isOpen={isOpenDelete}
         setOpen={setOpenDelete}
         planner={selectedDelete}
+        setPlanners={setPlanners}
       />
     </>
   )

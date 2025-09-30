@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { CalendarDays, CircleAlert, Clock, Trash } from "lucide-react";
 import { Badge } from "./ui/badge";

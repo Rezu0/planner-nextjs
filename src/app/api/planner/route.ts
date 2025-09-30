@@ -94,6 +94,8 @@ export async function GET(req: Request) {
     await dbConnect();
     const { searchParams } = new URL(req.url);
     const userIdString = searchParams.get("user");
+    const month = parseInt(searchParams.get("month") || "0", 10); // 1-12
+    const year = parseInt(searchParams.get("year") || "0", 10);
 
     if (!userIdString) {
       return NextResponse.json(
@@ -121,8 +123,18 @@ export async function GET(req: Request) {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
+    const startOfMonth = new Date(year, month - 1, 1); 
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
+
     // Ambil semua planner user dan kategorikan
-    const allPlanners = await Planner.find({ idUser }).sort({ start: 1 }).lean() as PlannerData[];
+    const allPlanners = await Planner.find(
+      { 
+        idUser,
+        start: { $gte: startOfMonth, $lte: endOfMonth }
+      }
+    ).sort(
+      { start: 1 }
+    ).lean() as PlannerData[];
 
     const categorizedPlanners: {
       today: PlannerData[];

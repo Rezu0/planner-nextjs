@@ -22,6 +22,7 @@ export default function Home() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isPlanners, setPlanners] = useState<any[]>([]);
+  const [isFilter, setFilter] = useState<any>({});
   
   const { user } = useAuthStore();
 
@@ -35,7 +36,7 @@ export default function Home() {
 
     const fetchEvents = async () => {
       try {
-        const res = await fetch('/api/planner?user=' + user?.idUser);
+        const res = await fetch(`/api/planner?user=${user?.idUser}&month=${isFilter?.month}&year=${isFilter?.year}`);
         const data = await res.json();
         if (!res.ok) {
           toast.error(data.message || "failed to fetch events");
@@ -59,7 +60,7 @@ export default function Home() {
     }
     
     fetchEvents();
-  }, [user?.idUser]);
+  }, [user?.idUser, isFilter]);
 
   useEffect(() => {
     const fetchMe = async () => {
@@ -144,6 +145,7 @@ export default function Home() {
           <PlannerCalendar 
             isPlanners={isPlanners}
             setPlanners={setPlanners}
+            setFilter={setFilter}
           />
         </div>
       </main>

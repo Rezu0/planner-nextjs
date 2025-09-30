@@ -17,9 +17,10 @@ import { toast } from "sonner";
 interface FullCalendarProps {
   isPlanners?: any[];
   setPlanners?: (planners: any[]) => void;
+  setFilter?: (isFilter: any) => void;
 }
 
-export default function PlannerCalendar({ isPlanners, setPlanners }: FullCalendarProps) {
+export default function PlannerCalendar({ isPlanners, setPlanners, setFilter }: FullCalendarProps) {
   const [events, setEvents] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedInfo, setSelectedInfo] = useState<any>(null);
@@ -185,6 +186,15 @@ export default function PlannerCalendar({ isPlanners, setPlanners }: FullCalenda
             left: "prev,next today",
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
+          datesSet={(arg) => {
+            const currentDate = arg.view.currentStart; 
+            const month = currentDate.getMonth() + 1; // bulan sebenarnya
+            const year = currentDate.getFullYear();
+
+            setFilter?.({
+              month, year
+            })
           }}
           buttonText={{
             today: "Hari ini",

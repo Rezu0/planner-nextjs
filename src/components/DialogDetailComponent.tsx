@@ -1,3 +1,5 @@
+"use client"
+
 import { Planner } from "./PlannerListComponent";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 import { ScrollArea } from "./ui/scroll-area";

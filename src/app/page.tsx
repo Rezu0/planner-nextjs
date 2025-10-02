@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import PlannerCalendar from "@/components/FullcalenderComponent";
 import { useAuthStore } from "@/AuthProvider";
 import { PlannerListComponent } from "@/components/PlannerListComponent";
+import { FloatingButtonGroup } from "@/components/FloatingButtonComponent";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -118,6 +119,11 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen w-full justify-center items-center">
+
+      <FloatingButtonGroup 
+        onAdd={() => console.log("Tambah planner diklik")}
+        onFilter={() => console.log("Filter diklik")}
+      />
       {/* Main content */}
       <main className="w-full max-w-4xl p-8">
         {/* Header */}
